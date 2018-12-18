@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import config from './config/base.config';
 import dbconnection from './db/db.connect';
 import userRoutes from './router/user.route';
+import planRoutes from './router/plan.route';
 
 dbconnection();
 
@@ -14,6 +15,8 @@ app.use(bodyParser.json());
 app.use(helmet());
 
 app.use('/api/v1', userRoutes);
+
+app.use('/api/v1', planRoutes);
 
 app.get('/', (req, res) => {
   return res.send('Welcome to membership API');
