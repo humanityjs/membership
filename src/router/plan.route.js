@@ -1,13 +1,14 @@
 import express from 'express';
 import planController from '../controllers/plan.controller';
+import validatorMiddleware from '../middlewares/validator.middleware';
 
 const router = express.Router();
 
 router.param('id', planController.findByIdMethod);
 
-router.route('/plans')
-  .get(planController.findAllMethod)
-  .post(planController.createMethod);
+router.post('/plans', validatorMiddleware.checkPlan, planController.createMethod);
+
+router.get('/plans', planController.findAllMethod)
 
 router.route('/plans/:id')
   .get(planController.getUsersByPlan);

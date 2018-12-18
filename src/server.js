@@ -22,6 +22,11 @@ app.get('/', (req, res) => {
   return res.send('Welcome to membership API');
 });
 
+app.use((err, req, res, next) => {
+  console.log(err.message);
+  return res.status(500).json(err.message);
+})
+
 
 app.listen(config.PORT, () => {
   console.info(`App started on localhost:${config.PORT}`);
