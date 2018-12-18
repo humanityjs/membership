@@ -20,6 +20,11 @@ const schema = {
     type: String,
     required: true,
     unique: true
+  },
+
+  plan: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Plan'
   }
 }
 

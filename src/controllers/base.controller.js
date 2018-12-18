@@ -1,67 +1,64 @@
 import {merge} from 'lodash';
+import Query from './query.controller';
 
-class baseController {
+class baseController extends Query {
   constructor (model) {
+    super(model);
     if (!model) {
       throw new Error('Please supply a model');
     }
     this.model = model;
   }
 
-  create = async (req, res) => {
+  createMethod = async (req, res) => {
     const { body } = req;
     try {
-      const result = await this.model.create(body);
+      const result = await this.create(this.model, body)
       return res.json(result);
     } catch (e) {
       return res.status(500).send({ message: 'Unable to create at this moment' });
     }
   }
 
-  read = async (req, res) => {
+  readMethod = async (req, res) => {
     const { docFromId } = req;
     return res.json(docFromId);
   }
 
-  update = async (req, res) => {
+  updateMethod = async (req, res) => {
     const { docFromId } = req;
     const { body } = req;
     merge(docFromId, body);
     try {
-      const result = await this.model.findByIdAndUpdate(
-        docFromId.id,
-        docFromId,
-        { new: true }
-      ).exec();
-
+      const result = await this.update(this.model, docFromId).exec();
       return res.send(result);
     } catch (e) {
       return res.status(500).send({ message: 'Unable to update document' });
     }
   }
 
-  delete = async (req, res) => {
+  deleteMethod = async (req, res) => {
     const { docFromId } = req
     try {
-      const result = await this.model.findByIdAndDelete(docFromId.id).exec();
+      const result = await this.delete(this.model, docFromId.id).exec();
       return res.send(result);
     } catch (e) {
       return res.status(500).send({ message: 'Unable to delete' });
     }
   }
 
-  findAll = async (req, res) => {
+  findAllMethod = async (req, res) => {
     try {
-      const result = await this.model.find({}).exec();
+      const result = await this.findAll(this.model);
       return res.send(result);
     } catch (e) {
       return res.status(500).send({ message: 'Your request cannot be processed at this time' });
     }
   }
 
-  findById = async (req, res, next, id) => {
+  findByIdMethod = async (req, res, next, id) => {
     try {
-      const result = await this.model.findById(id).exec();
+      const result = await this.findById(this.model, id);
       req.docFromId = result;
       next()
     } catch (e) {
