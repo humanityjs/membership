@@ -51,5 +51,26 @@ export default class ValidatorMiddleware {
 
     next();
   }
+
+  static addPlanToUser = (req, res, next) => {
+    const planType = req.docFromId.type;
+    const body = req.body
+    let errors = {}
+    if (planType === constants.TIME_BASED) {
+      if (!body.startDate) {
+        errors.startDate = `Please provide a start date`;
+      }
+
+      if (!body.endDate) {
+        errors.endDate = `Please provide an end date`;
+      }
+    }
+
+    if (Object.keys(errors).length > 0) {
+      return res.status(400).json(errors);
+    }
+
+    next();
+  }
 }
 

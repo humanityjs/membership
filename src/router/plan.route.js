@@ -13,7 +13,6 @@ router.get('/plans', planController.findAllMethod)
 router.route('/plans/:id')
   .get(planController.getUsersByPlan);
 
-router.route('/plans/:id/add/:userId')
-  .post(planController.addUserToPlan)
+router.post('/plans/:id/add/:userId', validatorMiddleware.addPlanToUser, planController.addUserToPlan)
 
 export default router;
