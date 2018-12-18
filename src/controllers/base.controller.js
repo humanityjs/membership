@@ -12,7 +12,7 @@ class baseController {
     const { body } = req;
     try {
       const result = await this.model.create(body);
-      return res.json({result});
+      return res.json(result);
     } catch (e) {
       return res.status(500).send({ message: 'Unable to create at this moment' });
     }
@@ -52,7 +52,7 @@ class baseController {
 
   findAll = async (req, res) => {
     try {
-      const result = await this.model.findAll({}).exec();
+      const result = await this.model.find({}).exec();
       return res.send(result);
     } catch (e) {
       return res.status(500).send({ message: 'Your request cannot be processed at this time' });
