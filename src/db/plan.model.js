@@ -14,9 +14,16 @@ const schema = {
 
   users: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    unique: true
-  }]
+    ref: 'User'
+  }],
+
+  startDate: {
+    type: Date
+  },
+
+  endDate: {
+    type: Date
+  }
 }
 
 const planSchema = new mongoose.Schema(schema);

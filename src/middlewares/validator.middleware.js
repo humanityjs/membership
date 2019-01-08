@@ -2,6 +2,8 @@ import validate from '../validate';
 
 import constants from '../constants';
 
+import Plan from '../db/plan.model';
+
 export default class ValidatorMiddleware {
   static checkUser = (req, res, next) => {
     const body = req.body;
@@ -29,12 +31,21 @@ export default class ValidatorMiddleware {
     next();
   }
 
-  static checkPlan = (req, res, next) => {
+  static checkPlan = async (req, res, next) => {
     const body = req.body;
     let errors = {};
 
     if (!body.name || !validate.isString(body.name)) {
       errors.name = 'Please provide a valid name';
+    }
+
+    try {
+      const plan = await Plan.findOne({ name: body.name }).exec();
+      if (plan) {
+        errors.name = 'A plan with that name already exists';
+      }
+    } catch (e) {
+      console.log(e.message);
     }
 
     if (!body.type || !validate.isString(body.type)) {
@@ -45,6 +56,16 @@ export default class ValidatorMiddleware {
       errors.type = `Plan must be one of ${constants.PLANS.toString()} `;
     }
 
+    if (body.type === constants.TIME_BASED) {
+      if (!body.startDate) {
+        errors.startDate = `Please provide a start date`;
+      }
+
+      if (!body.endDate) {
+        errors.endDate = `Please provide an end date`;
+      }
+    }
+
     if (Object.keys(errors).length > 0) {
       return res.status(400).json(errors);
     }
@@ -53,17 +74,17 @@ export default class ValidatorMiddleware {
   }
 
   static addPlanToUser = (req, res, next) => {
-    const planType = req.docFromId.type;
-    const body = req.body
-    let errors = {}
-    if (planType === constants.TIME_BASED) {
-      if (!body.startDate) {
-        errors.startDate = `Please provide a start date`;
-      }
+    const userId = req.params.userId;
+    const plan = req.docFromId;
 
-      if (!body.endDate) {
-        errors.endDate = `Please provide an end date`;
-      }
+    let errors = {}
+
+    if (!userId) {
+      errors.userId = 'Please provide a valid user ID';
+    }
+
+    if (!plan) {
+      errors.planId = 'Please provide a valid plan ID';
     }
 
     if (Object.keys(errors).length > 0) {
