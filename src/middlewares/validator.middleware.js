@@ -3,6 +3,7 @@ import validate from '../validate';
 import constants from '../constants';
 
 import Plan from '../db/plan.model';
+import User from '../db/user.model';
 
 export default class ValidatorMiddleware {
   static checkUser = (req, res, next) => {
@@ -73,9 +74,10 @@ export default class ValidatorMiddleware {
     next();
   }
 
-  static addPlanToUser = (req, res, next) => {
+  static addPlanToUser = async (req, res, next) => {
     const userId = req.params.userId;
     const plan = req.docFromId;
+    let user;
 
     let errors = {}
 
@@ -87,9 +89,17 @@ export default class ValidatorMiddleware {
       errors.planId = 'Please provide a valid plan ID';
     }
 
+    try {
+      user = await User.findById(userId)
+    } catch (e) {
+      errors.user = 'User with that ID does not exist'
+    }
+
     if (Object.keys(errors).length > 0) {
       return res.status(400).json(errors);
     }
+
+    req.user = user;
 
     next();
   }

@@ -8,10 +8,9 @@ class planController extends baseController {
   }
 
   addUserToPlan = async (req, res) => {
-    const userId = req.params.userId;
     const plan = req.docFromId;
-    const user = await this.findUserById(userId)
-
+    const user = req.user;
+    
     if (!user) {
       return res.status(400).send({
         message: 'User not found'
@@ -33,7 +32,7 @@ class planController extends baseController {
       await this.update(this.model, plan);
       await this.update(User, user);
 
-      return res.json({ 
+      return res.status(200).json({ 
         message: `User successfully added to the ${plan.name} plan`
       });
     } catch (e) {
@@ -51,12 +50,11 @@ class planController extends baseController {
 
   getUsersByPlan = async (req, res) => {
     const {id} = req.docFromId;
-    console.log(id);
     try {
       const result = await this.model.findById(id)
         .populate('users')
         .exec();
-      return res.json(result.users);
+      return res.status(200).json(result.users);
     } catch (e) {
       console.log(e.message);
       return res.status(500).send({ message: 'An error occured' });

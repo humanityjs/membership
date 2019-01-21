@@ -22,7 +22,6 @@ class Query {
   delete = async (model, id) => {
     try {
       return await model.findByIdAndDelete(id).exec();
-      // return result;
     } catch (e) {
       throw new Error (e);
     }
@@ -31,7 +30,6 @@ class Query {
   findAll = async (model) => {
     try {
       return await model.find({}).exec();
-      // return result;
     } catch (e) {
       throw new Error (e);
     }
@@ -40,7 +38,6 @@ class Query {
   findById = async (model, id) => {
     try {
       return model.findById(id).exec();
-      // return result;
     } catch (e) {
       throw new Error (e);
     }
