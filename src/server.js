@@ -1,4 +1,9 @@
-import 'babel-polyfill';
+import dotenv from 'dotenv'
+dotenv.config();
+
+if (process.env.NODE_ENV === 'production') {
+  require('babel-polyfill');
+}
 
 import express from 'express';
 import bodyParser from 'body-parser';
@@ -27,9 +32,13 @@ app.get('/', (req, res) => {
 app.use((err, req, res, next) => {
   console.log(err.message);
   return res.status(500).json(err.message);
-})
+});
 
 
 app.listen(config.PORT, () => {
   console.info(`App started on localhost:${config.PORT}`);
 });
+
+
+export default app;
+

@@ -14,7 +14,7 @@ class baseController extends Query {
     const { body } = req;
     try {
       const result = await this.create(this.model, body)
-      return res.json(result);
+      return res.status(201).json(result);
     } catch (e) {
       return res.status(500).send({ message: 'Unable to create at this moment' });
     }
@@ -22,7 +22,7 @@ class baseController extends Query {
 
   readMethod = async (req, res) => {
     const { docFromId } = req;
-    return res.json(docFromId);
+    return res.status(200).json(docFromId);
   }
 
   updateMethod = async (req, res) => {
@@ -30,8 +30,8 @@ class baseController extends Query {
     const { body } = req;
     merge(docFromId, body);
     try {
-      const result = await this.update(this.model, docFromId).exec();
-      return res.send(result);
+      const result = await this.update(this.model, docFromId);
+      return res.status(200).send(result);
     } catch (e) {
       return res.status(500).send({ message: 'Unable to update document' });
     }
@@ -40,17 +40,18 @@ class baseController extends Query {
   deleteMethod = async (req, res) => {
     const { docFromId } = req
     try {
-      const result = await this.delete(this.model, docFromId.id).exec();
-      return res.send(result);
+      await this.delete(this.model, docFromId.id);
+      return res.status(200).json({ message: 'Resource deleted successfully' });
     } catch (e) {
-      return res.status(500).send({ message: 'Unable to delete' });
+      console.log(e.message);
+      return res.status(400).send({ message: 'Unable to delete' });
     }
   }
 
   findAllMethod = async (req, res) => {
     try {
       const result = await this.findAll(this.model);
-      return res.send(result);
+      return res.status(200).send(result);
     } catch (e) {
       return res.status(500).send({ message: 'Your request cannot be processed at this time' });
     }
@@ -62,7 +63,7 @@ class baseController extends Query {
       req.docFromId = result;
       next()
     } catch (e) {
-      return res.status(500).send({ message: 'Cannot retrieve item with that ID' });
+      return res.status(400).send({ message: 'Cannot retrieve item with that ID' });
     }
   }
 };

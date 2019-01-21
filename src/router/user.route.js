@@ -13,6 +13,6 @@ router.post('/users', validatorMiddleware.checkUser, userController.createMethod
 router.route('/users/:id')
   .get(userController.readMethod)
   .put(userController.updateMethod)
-  .delete(userController.deleteMethod);
+  .delete(userController.deleteUser);
 
 export default router;

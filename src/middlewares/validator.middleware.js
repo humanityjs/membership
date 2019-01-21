@@ -2,6 +2,9 @@ import validate from '../validate';
 
 import constants from '../constants';
 
+import Plan from '../db/plan.model';
+import User from '../db/user.model';
+
 export default class ValidatorMiddleware {
   static checkUser = (req, res, next) => {
     const body = req.body;
@@ -29,12 +32,21 @@ export default class ValidatorMiddleware {
     next();
   }
 
-  static checkPlan = (req, res, next) => {
+  static checkPlan = async (req, res, next) => {
     const body = req.body;
     let errors = {};
 
     if (!body.name || !validate.isString(body.name)) {
       errors.name = 'Please provide a valid name';
+    }
+
+    try {
+      const plan = await Plan.findOne({ name: body.name }).exec();
+      if (plan) {
+        errors.name = 'A plan with that name already exists';
+      }
+    } catch (e) {
+      console.log(e.message);
     }
 
     if (!body.type || !validate.isString(body.type)) {
@@ -45,18 +57,7 @@ export default class ValidatorMiddleware {
       errors.type = `Plan must be one of ${constants.PLANS.toString()} `;
     }
 
-    if (Object.keys(errors).length > 0) {
-      return res.status(400).json(errors);
-    }
-
-    next();
-  }
-
-  static addPlanToUser = (req, res, next) => {
-    const planType = req.docFromId.type;
-    const body = req.body
-    let errors = {}
-    if (planType === constants.TIME_BASED) {
+    if (body.type === constants.TIME_BASED) {
       if (!body.startDate) {
         errors.startDate = `Please provide a start date`;
       }
@@ -69,6 +70,36 @@ export default class ValidatorMiddleware {
     if (Object.keys(errors).length > 0) {
       return res.status(400).json(errors);
     }
+
+    next();
+  }
+
+  static addPlanToUser = async (req, res, next) => {
+    const userId = req.params.userId;
+    const plan = req.docFromId;
+    let user;
+
+    let errors = {}
+
+    if (!userId) {
+      errors.userId = 'Please provide a valid user ID';
+    }
+
+    if (!plan) {
+      errors.planId = 'Please provide a valid plan ID';
+    }
+
+    try {
+      user = await User.findById(userId)
+    } catch (e) {
+      errors.user = 'User with that ID does not exist'
+    }
+
+    if (Object.keys(errors).length > 0) {
+      return res.status(400).json(errors);
+    }
+
+    req.user = user;
 
     next();
   }
