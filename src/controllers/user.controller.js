@@ -9,7 +9,6 @@ class userController extends baseController {
 
   deleteUser = async (req, res) => {
     const { docFromId } = req;
-    console.log(docFromId, 'sjdhfj');
     try {
       const plan = await this.findById(Plan, docFromId.plan);
       if (plan) {
@@ -22,7 +21,6 @@ class userController extends baseController {
       await this.delete(this.model, docFromId._id);
       return res.status(200).json({ message: 'User deleted successfully' });
     } catch (e) {
-      console.log(e.message);
       return res.status(400).send({ message: 'Unable to delete user' });
     }
   }

@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "NODE_ENV=test mocha --exit --timeout 10000 --require @babel/register src/**/*.spec.js",
-    "start": "npm run build && node dist/server.js",
+    "start": "NODE_ENV=production node dist/server.js",
     "start:dev": "NODE_ENV=development nodemon --watch src --exec babel-node src/server.js",
+    "postinstall": "NODE_ENV=production npm run build",
     "build": "rm -rf dist && mkdir dist && babel src --out-dir dist"
   },
   "keywords": [],
@@ -17,9 +18,9 @@
     "@babel/core": "^7.2.2",
     "@babel/node": "^7.2.2",
     "@babel/plugin-proposal-class-properties": "^7.2.1",
+    "@babel/polyfill": "^7.2.5",
     "@babel/preset-env": "^7.2.0",
     "@babel/register": "^7.0.0",
-    "babel-polyfill": "^6.26.0",
     "body-parser": "^1.18.3",
     "dotenv": "^6.2.0",
     "express": "^4.16.4",
